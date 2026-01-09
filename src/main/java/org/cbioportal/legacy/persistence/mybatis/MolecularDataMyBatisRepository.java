@@ -7,13 +7,13 @@ import org.cbioportal.legacy.model.GeneMolecularAlteration;
 import org.cbioportal.legacy.model.GenericAssayMolecularAlteration;
 import org.cbioportal.legacy.model.GenesetMolecularAlteration;
 import org.cbioportal.legacy.model.MolecularProfileSamples;
+import org.cbioportal.legacy.model.Sample;
 import org.cbioportal.legacy.persistence.MolecularDataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.cbioportal.legacy.model.Sample;
 
 @Repository
 public class MolecularDataMyBatisRepository implements MolecularDataRepository {

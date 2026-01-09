@@ -233,8 +233,8 @@ public class MolecularDataServiceImpl implements MolecularDataService {
     }
 
     List<GeneMolecularAlteration> molecularAlterations =
-      molecularDataRepository.getGeneMolecularAlterationsInMultipleMolecularProfiles(
-        distinctMolecularProfileIds, entrezGeneIds, projection);
+        molecularDataRepository.getGeneMolecularAlterationsInMultipleMolecularProfiles(
+            distinctMolecularProfileIds, entrezGeneIds, projection);
     Map<String, List<GeneMolecularAlteration>> molecularAlterationsMap =
         molecularAlterations.stream()
             .collect(groupingBy(GeneMolecularAlteration::getMolecularProfileId));

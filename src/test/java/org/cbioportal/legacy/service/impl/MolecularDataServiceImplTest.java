@@ -331,7 +331,8 @@ public class MolecularDataServiceImplTest extends BaseServiceImplTest {
     mpB.setStableId(MOLECULAR_PROFILE_ID_B);
     mpB.setCancerStudyIdentifier(STUDY_ID);
     when(molecularProfileService.getMolecularProfiles(
-            new java.util.TreeSet<>(Arrays.asList(MOLECULAR_PROFILE_ID_A, MOLECULAR_PROFILE_ID_B)), "SUMMARY"))
+            new java.util.TreeSet<>(Arrays.asList(MOLECULAR_PROFILE_ID_A, MOLECULAR_PROFILE_ID_B)),
+            "SUMMARY"))
         .thenReturn(Arrays.asList(mpA, mpB));
 
     // Prepare sample list across profiles
@@ -378,11 +379,10 @@ public class MolecularDataServiceImplTest extends BaseServiceImplTest {
     List<GeneMolecularAlteration> molecularAlterationList =
         Arrays.asList(alterationA1, alterationA2, alterationB1);
 
-    when(molecularDataRepository
-            .getGeneMolecularAlterationsInMultipleMolecularProfiles(
-                new java.util.TreeSet<>(Arrays.asList(MOLECULAR_PROFILE_ID_A, MOLECULAR_PROFILE_ID_B)),
-                Arrays.asList(ENTREZ_GENE_ID_1, ENTREZ_GENE_ID_2),
-                PROJECTION))
+    when(molecularDataRepository.getGeneMolecularAlterationsInMultipleMolecularProfiles(
+            new java.util.TreeSet<>(Arrays.asList(MOLECULAR_PROFILE_ID_A, MOLECULAR_PROFILE_ID_B)),
+            Arrays.asList(ENTREZ_GENE_ID_1, ENTREZ_GENE_ID_2),
+            PROJECTION))
         .thenReturn(molecularAlterationList);
 
     // Call the method under test
@@ -400,7 +400,8 @@ public class MolecularDataServiceImplTest extends BaseServiceImplTest {
             Arrays.asList(ENTREZ_GENE_ID_1, ENTREZ_GENE_ID_2),
             PROJECTION);
 
-    // There are two samples for profile A and one sample for profile B, and three molecular alteration entries:
+    // There are two samples for profile A and one sample for profile B, and three molecular
+    // alteration entries:
     // - profile A has two genes -> 2 samples * 2 genes = 4
     // - profile B has 1 gene -> 1 sample * 1 gene = 1
     // Total expected results = 5
