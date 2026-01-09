@@ -118,8 +118,9 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
       }
 
       // Group by profile
-      Map<String, List<GeneMolecularAlteration>> rowsByProfile = rawRows.stream()
-          .collect(Collectors.groupingBy(GeneMolecularAlteration::getMolecularProfileId));
+      Map<String, List<GeneMolecularAlteration>> rowsByProfile =
+          rawRows.stream()
+              .collect(Collectors.groupingBy(GeneMolecularAlteration::getMolecularProfileId));
 
       // Get sample order for each profile
       Map<String, MolecularProfileSamples> profileSamplesMap =
@@ -127,15 +128,18 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
 
       // Collect all internal IDs for sample lookup
       List<Integer> allInternalIds = new ArrayList<>();
-      profileSamplesMap.values().forEach(s -> 
-          Arrays.stream(s.getSplitSampleIds())
-              .mapToInt(Integer::parseInt)
-              .forEach(allInternalIds::add));
+      profileSamplesMap
+          .values()
+          .forEach(
+              s ->
+                  Arrays.stream(s.getSplitSampleIds())
+                      .mapToInt(Integer::parseInt)
+                      .forEach(allInternalIds::add));
 
       // Fetch samples and build unique ID map using SampleMapper
       List<Sample> samples = sampleMapper.getSamplesByInternalIds(allInternalIds, "SUMMARY");
-      Map<Integer, Sample> internalIdToSample = samples.stream()
-          .collect(Collectors.toMap(Sample::getInternalId, Function.identity()));
+      Map<Integer, Sample> internalIdToSample =
+          samples.stream().collect(Collectors.toMap(Sample::getInternalId, Function.identity()));
 
       List<GeneMolecularAlteration> results = new ArrayList<>();
 
@@ -159,8 +163,9 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
         if (profileRows == null) continue;
 
         // Group rows by gene
-        Map<Integer, List<GeneMolecularAlteration>> geneRows = profileRows.stream()
-            .collect(Collectors.groupingBy(GeneMolecularAlteration::getEntrezGeneId));
+        Map<Integer, List<GeneMolecularAlteration>> geneRows =
+            profileRows.stream()
+                .collect(Collectors.groupingBy(GeneMolecularAlteration::getEntrezGeneId));
 
         for (Map.Entry<Integer, List<GeneMolecularAlteration>> entry : geneRows.entrySet()) {
           Integer geneId = entry.getKey();
