@@ -18,13 +18,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MolecularDataMyBatisRepository implements MolecularDataRepository {
 
-  private static final Logger logger = LoggerFactory.getLogger(MolecularDataMyBatisRepository.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(MolecularDataMyBatisRepository.class);
 
   @Autowired private MolecularDataMapper molecularDataMapper;
-  
+
   @Autowired(required = false)
   private SampleMapper sampleMapper;
-  
+
   @Value("${clickhouse_mode:false}")
   private boolean clickhouseMode;
 
@@ -87,33 +88,35 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
       return getGeneMolecularAlterationsInMultipleMolecularProfilesClickHouse(
           molecularProfileIds, entrezGeneIds, projection);
     }
-    
+
     return molecularDataMapper.getGeneMolecularAlterationsInMultipleMolecularProfiles(
         molecularProfileIds, entrezGeneIds, projection);
   }
-  
+
   /**
-   * ClickHouse-optimized implementation that queries genetic_alteration_derived table
-   * and aggregates per-sample rows into CSV format expected by the service layer.
+   * ClickHouse-optimized implementation that queries genetic_alteration_derived table and
+   * aggregates per-sample rows into CSV format expected by the service layer.
    */
-  private List<GeneMolecularAlteration> getGeneMolecularAlterationsInMultipleMolecularProfilesClickHouse(
-      Set<String> molecularProfileIds, List<Integer> entrezGeneIds, String projection) {
-    
+  private List<GeneMolecularAlteration>
+      getGeneMolecularAlterationsInMultipleMolecularProfilesClickHouse(
+          Set<String> molecularProfileIds, List<Integer> entrezGeneIds, String projection) {
+
     if (sampleMapper == null) {
-      logger.warn("ClickHouse optimization requested but SampleMapper is not available. Falling back to standard method.");
+      logger.warn(
+          "ClickHouse optimization requested but SampleMapper is not available. Falling back to standard method.");
       return molecularDataMapper.getGeneMolecularAlterationsInMultipleMolecularProfiles(
           molecularProfileIds, entrezGeneIds, projection);
     }
-    
+
     try {
-      List<GeneMolecularAlteration> rawRows = 
+      List<GeneMolecularAlteration> rawRows =
           molecularDataMapper.getGeneMolecularAlterationsInMultipleMolecularProfilesClickHouse(
               molecularProfileIds, entrezGeneIds);
 
       if (rawRows.isEmpty()) {
         return Collections.emptyList();
       }
-      
+
       // Group by profile
       Map<String, List<GeneMolecularAlteration>> rowsByProfile = rawRows.stream()
           .collect(Collectors.groupingBy(GeneMolecularAlteration::getMolecularProfileId));
@@ -135,11 +138,11 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
           .collect(Collectors.toMap(Sample::getInternalId, Function.identity()));
 
       List<GeneMolecularAlteration> results = new ArrayList<>();
-      
+
       for (String profileId : profileSamplesMap.keySet()) {
         MolecularProfileSamples mps = profileSamplesMap.get(profileId);
         String[] sampleIds = mps.getSplitSampleIds();
-        
+
         // Build sample unique ID order
         List<String> sampleUniqueIdOrder = new ArrayList<>(sampleIds.length);
         for (String internalIdStr : sampleIds) {
@@ -162,7 +165,7 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
         for (Map.Entry<Integer, List<GeneMolecularAlteration>> entry : geneRows.entrySet()) {
           Integer geneId = entry.getKey();
           List<GeneMolecularAlteration> geneAlterations = entry.getValue();
-          
+
           // Build map of sampleUniqueId -> value
           Map<String, String> sampleValueMap = new HashMap<>();
           for (GeneMolecularAlteration alt : geneAlterations) {
@@ -172,7 +175,7 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
               sampleValueMap.put(parts[0], parts[1]);
             }
           }
-          
+
           // Build CSV values string in sample order
           StringBuilder sb = new StringBuilder();
           for (int i = 0; i < sampleUniqueIdOrder.size(); i++) {
@@ -182,7 +185,7 @@ public class MolecularDataMyBatisRepository implements MolecularDataRepository {
               sb.append(sampleValueMap.get(sampleUniqueId));
             }
           }
-          
+
           GeneMolecularAlteration alteration = new GeneMolecularAlteration();
           alteration.setEntrezGeneId(geneId);
           alteration.setMolecularProfileId(profileId);
