@@ -17,6 +17,15 @@ public abstract class MolecularAlteration implements Serializable {
   }
 
   /**
+   * Get the raw values string for all samples.
+   *
+   * @return string with list of values, comma (,) separated
+   */
+  public String getValues() {
+    return values;
+  }
+
+  /**
    * Returns the values attribute split on (,).
    *
    * <p>Remembers last .split to avoid repeating this costly operation.
